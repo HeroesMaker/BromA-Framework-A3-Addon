@@ -4,33 +4,31 @@
 //
 // =============================================================================
 
-
-
 // MEDICAL SUPPLIES ============================================================
 
 switch (true) do {
     case (mission_AGM_enabled): {
-        _suppliesMEDIC = [[_unit,[_bandage,_countBANDAGE], [_morphine,_countMORPHINE],[_epi,_countEPI],[_bloodbag,_countBLOODBAG]]];
-        _suppliesNORMAL = [[_unit,[_bandage, 2], [_morphine,1],[_epi, 1]]];
+        _suppliesMEDIC = [[_bandage, _countBANDAGE], [_morphine, _countMORPHINE], [_epi, _countEPI], [_bloodbag, _countBLOODBAG]];
+        _suppliesNORMAL = [[_bandage, _countBANDAGE / 4], [_morphine, _countMORPHINE / 4], [_epi, _countEPI / 4]];
     };
 
     case (mission_ACE3_enabled): {
-
         switch (mission_ace3_medical_level) do {
-
-            case 1: { // SIMPLE
-                _suppliesMEDIC = [[_fieldDressing,_countBANDAGE],[_elasticBandage, _countBANDAGE],[_quickClot, _countBANDAGE],[_morphine,_countMORPHINE],[_epi,_countEPI],[_bloodbag,_countBLOODBAG]];
-                _suppliesNORMAL = [[_fieldDressing, 2], [_morphine,1],[_epi, 1]];
+            case 1: { // BASIC
+                _suppliesMEDIC = [[_fieldDressing, _countBANDAGE], [_morphine, _countMORPHINE], [_epi, _countEPI], [_bloodbag, _countBLOODBAG]];
+                _suppliesNORMAL = [[_fieldDressing, _countBANDAGE / 4], [_morphine, _countMORPHINE / 4], [_epi, _countEPI / 4]];
             };
             case 2: { // ADVANCED
                 _suppliesMEDIC = [
-                    [_packingBandage, _countBANDAGE],[_elasticBandage, _countBANDAGE],[_quickClot, _countBANDAGE],
+                    [_elasticBandage, _countBANDAGE], [_quickClot, _countBANDAGE],
                     [_tourniquet, _countCAT],
-                    [_morphine, _countMORPHINE],[_epi, _countEPI],
+                    [_morphine, _countMORPHINE], [_epi, _countEPI],
                     [_blood500, _countBLOODBAG],
-                    [_defib, 1],[_surgKit, 1]
+                    [_surgKit, 1], [_defib, 1],
+                    [_personalAidKit, _countPAK],
+                    [_blood1000, _countBLOODBAG]
                 ];
-                _suppliesNORMAL = [[_fieldDressing, 2],[_packingBandage, 3],[_quickClot, 2],[_elasticBandage, 2],[_tourniquet, 1],[_morphine,1],[_epi,1]];
+                _suppliesNORMAL = [[_packingBandage, _countBANDAGE / 4], [_quickClot, _countBANDAGE / 4], [_elasticBandage, _countBANDAGE / 4], [_tourniquet, _countCAT], [_morphine, _countMORPHINE / 4], [_epi, _countEPI / 4]];
             };
         };
     };
@@ -260,6 +258,26 @@ switch (true) do {
         [_unit, "primary", _commonSUPPRESSOR] call BRM_FMK_fnc_attachToWeapon;
         [_unit, _commonAT] call BRM_FMK_fnc_addWeapon;
     };
+    
+    case (_isReconAT): {
+        [_unit, _reconHEAD, _reconUNIFORM, _reconVEST, _bigBACKPACK] call BRM_FMK_fnc_useUniform;
+        [_unit, "binoc"] call BRM_FMK_fnc_addOptics;
+        [_unit,[[_wsmoke,2],[_rsmoke,2],[_gsmoke,2],[_rchemlight,2],[_bchemlight,2],[_wflare,2],[_mapTools,1]]] call BRM_FMK_fnc_addtoVest;
+        [_unit, _commonRIFLE, _countRIFLELOW] call BRM_FMK_fnc_addWeaponKit;
+        [_unit, _specAT] call BRM_FMK_fnc_addWeapon;
+        [_unit, [[_specAT select RAMMO, _countAT] ]] call BRM_FMK_fnc_addtoBackpack;
+        [_unit, _specAT select GUN, 1, ["HE"]] call BRM_FMK_fnc_addAmmoAuto;
+        [_unit, "primary", _commonSUPPRESSOR] call BRM_FMK_fnc_attachToWeapon;
+    };
+    
+     case (_isReconMarksman ): {
+        [_unit, _reconHEAD, _reconUNIFORM, _reconVEST, _commonBACKPACK] call BRM_FMK_fnc_useUniform;
+        [_unit, "binoc"] call BRM_FMK_fnc_addOptics;
+        [_unit,[[_wsmoke,2],[_rsmoke,2],[_gsmoke,2],[_mapTools,1]]] call BRM_FMK_fnc_addtoVest;
+        [_unit, _commonMARKSMAN, _countRIFLE] call BRM_FMK_fnc_addWeaponKit;
+        [_unit, _commonMARKSMAN select GUN, _countTracerRIFLE, ["TRACER"]] call BRM_FMK_fnc_addAmmoAuto;
+        [_unit, "primary", _commonRCO] call BRM_FMK_fnc_attachToWeapon;
+    };
 
     case (_isReconMedic): {
         [_unit, _medicHEAD, _reconUNIFORM, _reconVEST, "TRYK_B_Medbag"] call BRM_FMK_fnc_useUniform;
@@ -307,7 +325,7 @@ switch (true) do {
     };
 
     case (_isSniper): {
-        [_unit, _sniperHEAD, _sniperUNIFORM, _commonVEST, "empty"] call BRM_FMK_fnc_useUniform;
+        [_unit, _sniperHEAD, _sniperUNIFORM, _commonVEST, if (_isLeader) then { "empty" } else { _commonBACKPACK }] call BRM_FMK_fnc_useUniform;
         [_unit,[[_wsmoke,2],[_mapTools,1],[_kestrel,1]]] call BRM_FMK_fnc_addtoVest;
         [_unit, _commonSNIPER, _countSNIPER] call BRM_FMK_fnc_addWeaponKit;
         [_unit, _commonSNIPER select GUN, (_countSNIPER/2)+1, ["TRACER"]] call BRM_FMK_fnc_addAmmoAuto;
@@ -317,15 +335,16 @@ switch (true) do {
     };
 
     case (_isSpotter): {
-        [_unit, _sniperHEAD, _sniperUNIFORM, _commonVEST, _commonBACKPACK] call BRM_FMK_fnc_useUniform;
+        [_unit, _sniperHEAD, _sniperUNIFORM, _commonVEST, if (_isLeader) then { "empty" } else { _commonBACKPACK }] call BRM_FMK_fnc_useUniform;
         [_unit,[[_wsmoke,2],[_rsmoke,2],[_gsmoke,2],[_mapTools,1],[_kestrel,1]]] call BRM_FMK_fnc_addtoVest;
         [_unit,[[_commonSNIPER select RAMMO, (_countSNIPER*2)]]] call BRM_FMK_fnc_addtoBackpack;
         [_unit, _commonRIFLE, _countRIFLELOW] call BRM_FMK_fnc_addWeaponKit;
         [_unit, "laserdesignator"] call BRM_FMK_fnc_addOptics;
+        if (_isLeader) then { [_unit, "BP"] call BRM_FMK_fnc_addRadio };
     };
 
     default {
-        [_unit, _commonHEAD, _commonUNIFORM, _commonVEST, "empty"] call BRM_FMK_fnc_useUniform;
+        [_unit, _commonHEAD, _commonUNIFORM, _commonVEST, _commonBACKPACK] call BRM_FMK_fnc_useUniform;
         [_unit,[[_wsmoke,2],[_grenade,3]]] call BRM_FMK_fnc_addtoVest;
         [_unit, _commonRIFLE, 5] call BRM_FMK_fnc_addWeaponKit;
     };
@@ -339,4 +358,9 @@ switch (true) do {
 
 [_unit, "SR"] call BRM_FMK_fnc_addRadio;
 
-if ((mission_AGM_enabled)||(mission_ACE3_enabled)) then { [_unit, [[_earBuds, 1]]] call BRM_FMK_fnc_addtoUniform };
+if (mission_AGM_enabled || mission_ACE3_enabled) then {
+    [_unit, [[_earBuds, 1]]] call BRM_FMK_fnc_addtoUniform;
+    if (_unit == player) then {
+        [_unit] call (if (mission_AGM_enabled) then { AGM_Hearing_fnc_putInEarPlugs } else { ace_hearing_fnc_putInEarplugs });
+    };
+};

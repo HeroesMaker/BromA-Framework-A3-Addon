@@ -8,27 +8,27 @@
 
 switch (true) do {
     case (mission_AGM_enabled): {
-        _suppliesMEDIC = [[_unit,[_bandage,_countBANDAGE], [_morphine,_countMORPHINE],[_epi,_countEPI],[_bloodbag,_countBLOODBAG]]];
-        _suppliesNORMAL = [[_unit,[_bandage, 2], [_morphine,1],[_epi, 1]]];
+        _suppliesMEDIC = [[_bandage, _countBANDAGE], [_morphine, _countMORPHINE], [_epi, _countEPI], [_bloodbag, _countBLOODBAG]];
+        _suppliesNORMAL = [[_bandage, _countBANDAGE / 4], [_morphine, _countMORPHINE / 4], [_epi, _countEPI / 4]];
     };
 
     case (mission_ACE3_enabled): {
-
         switch (mission_ace3_medical_level) do {
-
-            case 1: { // SIMPLE
-                _suppliesMEDIC = [[_fieldDressing,_countBANDAGE],[_elasticBandage, _countBANDAGE],[_quickClot, _countBANDAGE],[_morphine,_countMORPHINE],[_epi,_countEPI],[_bloodbag,_countBLOODBAG]];
-                _suppliesNORMAL = [[_fieldDressing, 2], [_morphine,1],[_epi, 1]];
+            case 1: { // BASIC
+                _suppliesMEDIC = [[_fieldDressing, _countBANDAGE], [_morphine, _countMORPHINE], [_epi, _countEPI], [_bloodbag, _countBLOODBAG]];
+                _suppliesNORMAL = [[_fieldDressing, _countBANDAGE / 4], [_morphine, _countMORPHINE / 4], [_epi, _countEPI / 4]];
             };
             case 2: { // ADVANCED
                 _suppliesMEDIC = [
-                    [_packingBandage, _countBANDAGE],[_elasticBandage, _countBANDAGE],[_quickClot, _countBANDAGE],
+                    [_elasticBandage, _countBANDAGE], [_quickClot, _countBANDAGE],
                     [_tourniquet, _countCAT],
-                    [_morphine, _countMORPHINE],[_epi, _countEPI],
+                    [_morphine, _countMORPHINE], [_epi, _countEPI],
                     [_blood500, _countBLOODBAG],
-                    [_defib, 1],[_surgKit, 1]
+                    [_surgKit, 1], [_defib, 1],
+                    [_personalAidKit, _countPAK],
+                    [_blood1000, _countBLOODBAG]
                 ];
-                _suppliesNORMAL = [[_fieldDressing, 2],[_packingBandage, 3],[_quickClot, 2],[_elasticBandage, 2],[_tourniquet, 1],[_morphine,1],[_epi,1]];
+                _suppliesNORMAL = [[_packingBandage, _countBANDAGE / 4], [_quickClot, _countBANDAGE / 4], [_elasticBandage, _countBANDAGE / 4], [_tourniquet, _countCAT], [_morphine, _countMORPHINE / 4], [_epi, _countEPI / 4]];
             };
         };
     };
@@ -50,6 +50,9 @@ switch (true) do {
         [_unit, ["ItemGPS"]] call BRM_FMK_fnc_linkItem;
         [_unit, _commonRIFLE, _countRIFLE] call BRM_FMK_fnc_addWeaponKit;
         [_unit, _commonPISTOL, _countPISTOL] call BRM_FMK_fnc_addWeaponKit;
+#ifdef STRUCTURE_RIFLEMAN_CCO
+        [_unit, "primary", _commonRCO] call BRM_FMK_fnc_attachToWeapon;
+#endif
         [_unit, "laserdesignator"] call BRM_FMK_fnc_addOptics;
         [_unit, "LR"] call BRM_FMK_fnc_addRadio;
         [_unit, "BP"] call BRM_FMK_fnc_addRadio;
@@ -69,7 +72,7 @@ switch (true) do {
     };
 
     case (_isTeamLeader): {
-        [_unit, _leaderHEAD, _commonUNIFORM, _ftlVEST, "empty"] call BRM_FMK_fnc_useUniform;
+        [_unit, _leaderHEAD, _commonUNIFORM, _ftlVEST, _commonBACKPACK] call BRM_FMK_fnc_useUniform;
         [_unit,[[_wsmoke,2],[_rsmoke,2],[_flashlight,1]]] call BRM_FMK_fnc_addtoVest;
         [_unit, _commonRIFLEGL, _countRIFLE] call BRM_FMK_fnc_addWeaponKit;
         [_unit,[[_commonRIFLEGL select GL, (_count40mm / 3)]]] call BRM_FMK_fnc_addtoVest;
@@ -99,15 +102,21 @@ switch (true) do {
         [_unit, _commonHEAD, _commonUNIFORM, _commonVEST, "empty"] call BRM_FMK_fnc_useUniform;
         [_unit,[[_wsmoke,2], [_grenade,_countGRENADES],[_flashlight,1],[_mapTools,1]]] call BRM_FMK_fnc_addtoVest;
         [_unit, _commonRIFLE, _countRIFLE] call BRM_FMK_fnc_addWeaponKit;
+#ifdef STRUCTURE_RIFLEMAN_CCO
+        [_unit, "primary", _commonCCO] call BRM_FMK_fnc_attachToWeapon;
+#endif
         [_unit, "laserdesignator"] call BRM_FMK_fnc_addOptics;
         [_unit, "BP"] call BRM_FMK_fnc_addRadio;
     };
 
     case (_isRifleman): {
-        [_unit, _commonHEAD, _commonUNIFORM, _commonVEST, "empty"] call BRM_FMK_fnc_useUniform;
+        [_unit, _commonHEAD, _commonUNIFORM, _commonVEST, _commonBACKPACK] call BRM_FMK_fnc_useUniform;
         [_unit,[[_wsmoke,2],[_grenade, _countGRENADES]]] call BRM_FMK_fnc_addtoVest;
         [_unit, _commonRIFLE, _countRIFLE] call BRM_FMK_fnc_addWeaponKit;
         [_unit, _commonRIFLE select GUN, _countTracerRIFLE, ["TRACER"]] call BRM_FMK_fnc_addAmmoAuto;
+#ifdef STRUCTURE_RIFLEMAN_CCO
+        [_unit, "primary", _commonCCO] call BRM_FMK_fnc_attachToWeapon;
+#endif
     };
 
     case (_isDemo): {
@@ -116,6 +125,9 @@ switch (true) do {
         [_unit,[[_apMINE,2],[_apBoundingMINE,2]]] call BRM_FMK_fnc_addtoVest;
         [_unit,[[_C4,3],[_satchelCharge,1],[_deadManSwitch,1]]] call BRM_FMK_fnc_addtoBackpack;
         [_unit, _commonRIFLE, _countRIFLELOW] call BRM_FMK_fnc_addWeaponKit;
+#ifdef STRUCTURE_RIFLEMAN_CCO
+        [_unit, "primary", _commonCCO] call BRM_FMK_fnc_attachToWeapon;
+#endif
     };
 
     case (_isRiflemanAT): {
@@ -125,34 +137,49 @@ switch (true) do {
         [_unit, _specAT] call BRM_FMK_fnc_addWeapon;
         [_unit, [[_specAT select RAMMO, _countAT] ]] call BRM_FMK_fnc_addtoBackpack;
         [_unit, _specAT select GUN, 1, ["HE"]] call BRM_FMK_fnc_addAmmoAuto;
+#ifdef STRUCTURE_RIFLEMAN_CCO
+        [_unit, "primary", _commonCCO] call BRM_FMK_fnc_attachToWeapon;
+#endif
     };
 
     case (_isWeaponsAT): {
         [_unit, _commonHEAD, _commonUNIFORM, _commonVEST, _bigBACKPACK] call BRM_FMK_fnc_useUniform;
         [_unit, _commonRIFLE, _countRIFLELOW] call BRM_FMK_fnc_addWeaponKit;
         [_unit, _weaponsAT, 1] call BRM_FMK_fnc_addWeaponKit;
+#ifdef STRUCTURE_RIFLEMAN_CCO
+        [_unit, "primary", _commonCCO] call BRM_FMK_fnc_attachToWeapon;
+#endif
     };
 
     case (_isWeaponsATAssistant): {
         [_unit, _commonHEAD, _commonUNIFORM, _commonVEST, _bigBACKPACK] call BRM_FMK_fnc_useUniform;
         [_unit, _commonRIFLE, _countRIFLELOW] call BRM_FMK_fnc_addWeaponKit;
         [_unit, [[_weaponsAT select RAMMO, _countWeaponsAT]]] call BRM_FMK_fnc_addtoBackpack;
+#ifdef STRUCTURE_RIFLEMAN_CCO
+        [_unit, "primary", _commonCCO] call BRM_FMK_fnc_attachToWeapon;
+#endif
     };
 
     case (_isWeaponsAA): {
         [_unit, _commonHEAD, _commonUNIFORM, _commonVEST, _commonBACKPACK] call BRM_FMK_fnc_useUniform;
         [_unit, _commonRIFLE, _countRIFLELOW] call BRM_FMK_fnc_addWeaponKit;
         [_unit, _weaponsAA, 1] call BRM_FMK_fnc_addWeaponKit;
+#ifdef STRUCTURE_RIFLEMAN_CCO
+        [_unit, "primary", _commonCCO] call BRM_FMK_fnc_attachToWeapon;
+#endif
     };
 
     case (_isWeaponsAAAssistant): {
         [_unit, _commonHEAD, _commonUNIFORM, _commonVEST, _bigBACKPACK] call BRM_FMK_fnc_useUniform;
         [_unit, _commonRIFLE, _countRIFLELOW] call BRM_FMK_fnc_addWeaponKit;
         [_unit, [[_weaponsAA select RAMMO, _countWeaponsAA]]] call BRM_FMK_fnc_addtoBackpack;
+#ifdef STRUCTURE_RIFLEMAN_CCO
+        [_unit, "primary", _commonCCO] call BRM_FMK_fnc_attachToWeapon;
+#endif
     };
 
     case (_isMarksman): {
-        [_unit, _commonHEAD, _marksmanUNIFORM, _marksmanVEST, "empty"] call BRM_FMK_fnc_useUniform;
+        [_unit, _commonHEAD, _marksmanUNIFORM, _marksmanVEST, _commonBACKPACK] call BRM_FMK_fnc_useUniform;
         [_unit,[[_wsmoke,2], [_rsmoke,2]]] call BRM_FMK_fnc_addtoVest;
         [_unit, _commonMARKSMAN, _countRIFLE] call BRM_FMK_fnc_addWeaponKit;
         [_unit, _commonMARKSMAN select GUN, _countTracerRIFLE, ["TRACER"]] call BRM_FMK_fnc_addAmmoAuto;
@@ -164,6 +191,9 @@ switch (true) do {
         [_unit,[[_wsmoke,2],[_spareBarrel,1]]] call BRM_FMK_fnc_addtoVest;
         [_unit, _commonAR, _countAR] call BRM_FMK_fnc_addWeaponKit;
         [_unit, _commonAR select GUN, (_countTracerRIFLE), ["TRACER"]] call BRM_FMK_fnc_addAmmoAuto;
+#ifdef STRUCTURE_RIFLEMAN_CCO
+        [_unit, "primary", _commonCCO] call BRM_FMK_fnc_attachToWeapon;
+#endif
     };
 
     case (_isAutoriflemanAsst): {
@@ -171,6 +201,9 @@ switch (true) do {
         [_unit,[[_grenade,2],[_spareBarrel,1]]] call BRM_FMK_fnc_addtoVest;
         [_unit, _commonRIFLE, _countRIFLELOW] call BRM_FMK_fnc_addWeaponKit;
         [_unit, _commonAR select RAMMO, _countAR/2] call BRM_FMK_fnc_addAmmo;
+#ifdef STRUCTURE_RIFLEMAN_CCO
+        [_unit, "primary", _commonCCO] call BRM_FMK_fnc_attachToWeapon;
+#endif
     };
 
     case (_isMMG): {
@@ -178,6 +211,9 @@ switch (true) do {
         [_unit,[[_wsmoke,2],[_spareBarrel,1]]] call BRM_FMK_fnc_addtoVest;
         [_unit, _commonMG, _countMG] call BRM_FMK_fnc_addWeaponKit;
         [_unit, _commonMG select GUN, _countTracerMG, ["TRACER"]] call BRM_FMK_fnc_addAmmoAuto;
+#ifdef STRUCTURE_RIFLEMAN_CCO
+        [_unit, "primary", _commonCCO] call BRM_FMK_fnc_attachToWeapon;
+#endif
     };
 
     case (_isMMGAsst): {
@@ -186,6 +222,9 @@ switch (true) do {
         [_unit,[[_wsmoke,2]]] call BRM_FMK_fnc_addtoVest;
         [_unit,[[_commonMG select RAMMO, (_countMG*2)]]] call BRM_FMK_fnc_addtoBackpack;
         [_unit, _commonMG select GUN, _countTracerMG, ["TRACER"]] call BRM_FMK_fnc_addAmmoAuto;
+#ifdef STRUCTURE_RIFLEMAN_CCO
+        [_unit, "primary", _commonCCO] call BRM_FMK_fnc_attachToWeapon;
+#endif
     };
 
     case (_isGrenadier): {
@@ -193,13 +232,19 @@ switch (true) do {
         [_unit,[[_wsmoke,2],[_rsmoke,2]]] call BRM_FMK_fnc_addtoVest;
         [_unit,[[_commonRIFLEGL select GL, _count40mm]]] call BRM_FMK_fnc_addtoBackpack;
         [_unit, _commonRIFLEGL, _countRIFLELOW] call BRM_FMK_fnc_addWeaponKit;
+#ifdef STRUCTURE_RIFLEMAN_CCO
+        [_unit, "primary", _commonCCO] call BRM_FMK_fnc_attachToWeapon;
+#endif
     };
 
     case (_isLifeSaver): {
-        [_unit, _medicHEAD, _medicUNIFORM, _medicVEST, _commonBACKPACK] call BRM_FMK_fnc_useUniform;
+        [_unit, _medicHEAD, _medicUNIFORM, _medicVEST, _bigBACKPACK] call BRM_FMK_fnc_useUniform;
         [_unit,[[_wsmoke,2], [_gsmoke,3]]] call BRM_FMK_fnc_addtoVest;
         [_unit, _suppliesMEDIC] call BRM_FMK_fnc_addtoBackpack;
         [_unit, _commonRIFLE, _countRIFLELOW] call BRM_FMK_fnc_addWeaponKit;
+#ifdef STRUCTURE_RIFLEMAN_CCO
+        [_unit, "primary", _commonCCO] call BRM_FMK_fnc_attachToWeapon;
+#endif
         _defaultInsignia = "MedB";
     };
 
@@ -207,36 +252,54 @@ switch (true) do {
         [_unit, _commonHEAD, _commonUNIFORM, _commonVEST, _HMG] call BRM_FMK_fnc_useUniform;
         [_unit,[[_wsmoke,2]]] call BRM_FMK_fnc_addtoVest;
         [_unit, _commonRIFLE, _countRIFLE] call BRM_FMK_fnc_addWeaponKit;
+#ifdef STRUCTURE_RIFLEMAN_CCO
+        [_unit, "primary", _commonCCO] call BRM_FMK_fnc_attachToWeapon;
+#endif
     };
 
     case (_isStaticAT): {
         [_unit, _commonHEAD, _commonUNIFORM, _commonVEST, _StaticAT] call BRM_FMK_fnc_useUniform;
         [_unit,[[_wsmoke,2]]] call BRM_FMK_fnc_addtoVest;
         [_unit, _commonRIFLE, _countRIFLE] call BRM_FMK_fnc_addWeaponKit;
+#ifdef STRUCTURE_RIFLEMAN_CCO
+        [_unit, "primary", _commonCCO] call BRM_FMK_fnc_attachToWeapon;
+#endif
     };
 
     case (_isHMGTripod): {
         [_unit, _commonHEAD, _commonUNIFORM, _commonVEST, _HMGTripod] call BRM_FMK_fnc_useUniform;
         [_unit,[[_wsmoke,2]]] call BRM_FMK_fnc_addtoVest;
         [_unit, _commonRIFLE, _countRIFLE] call BRM_FMK_fnc_addWeaponKit;
+#ifdef STRUCTURE_RIFLEMAN_CCO
+        [_unit, "primary", _commonCCO] call BRM_FMK_fnc_attachToWeapon;
+#endif
     };
 
     case (_isATTripod): {
         [_unit, _commonHEAD, _commonUNIFORM, _commonVEST, _ATTripod] call BRM_FMK_fnc_useUniform;
         [_unit,[[_wsmoke,2]]] call BRM_FMK_fnc_addtoVest;
         [_unit, _commonRIFLE, _countRIFLE] call BRM_FMK_fnc_addWeaponKit;
+#ifdef STRUCTURE_RIFLEMAN_CCO
+        [_unit, "primary", _commonCCO] call BRM_FMK_fnc_attachToWeapon;
+#endif
     };
 
     case (_isMortar): {
         [_unit, _commonHEAD, _commonUNIFORM, _commonVEST, _mortar] call BRM_FMK_fnc_useUniform;
         [_unit,[[_wsmoke,2],[_mapTools,1]]] call BRM_FMK_fnc_addtoVest;
         [_unit, _commonRIFLE, _countRIFLE] call BRM_FMK_fnc_addWeaponKit;
+#ifdef STRUCTURE_RIFLEMAN_CCO
+        [_unit, "primary", _commonCCO] call BRM_FMK_fnc_attachToWeapon;
+#endif
     };
 
     case (_isMortarAssistant): {
         [_unit, _commonHEAD, _commonUNIFORM, _commonVEST, _mortarTripod] call BRM_FMK_fnc_useUniform;
         [_unit,[[_wsmoke,2],[_mapTools,1]]] call BRM_FMK_fnc_addtoVest;
         [_unit, _commonRIFLE, _countRIFLE] call BRM_FMK_fnc_addWeaponKit;
+#ifdef STRUCTURE_RIFLEMAN_CCO
+        [_unit, "primary", _commonCCO] call BRM_FMK_fnc_attachToWeapon;
+#endif
     };
 
     case (_isUAVOperator): {
@@ -246,23 +309,52 @@ switch (true) do {
         [_unit, _commonRIFLE, _countRIFLE] call BRM_FMK_fnc_addWeaponKit;
         [_unit, "laserdesignator"] call BRM_FMK_fnc_addOptics;
         [_unit, [_UAVTerminal]] call BRM_FMK_fnc_linkItem;
+#ifdef STRUCTURE_RIFLEMAN_CCO
+        [_unit, "primary", _commonCCO] call BRM_FMK_fnc_attachToWeapon;
+#endif
     };
 
     case (_isRecon): {
-        [_unit, _reconHEAD, _reconUNIFORM, _reconVEST, "empty"] call BRM_FMK_fnc_useUniform;
+        [_unit, _reconHEAD, _reconUNIFORM, _reconVEST, _commonBACKPACK] call BRM_FMK_fnc_useUniform;
         [_unit, "binoc"] call BRM_FMK_fnc_addOptics;
         [_unit,[[_wsmoke,2],[_rsmoke,2],[_gsmoke,2],[_rchemlight,2],[_bchemlight,2],[_wflare,2],[_mapTools,1]]] call BRM_FMK_fnc_addtoVest;
         [_unit, _commonRIFLE, _countRIFLE] call BRM_FMK_fnc_addWeaponKit;
         [_unit, "primary", _commonSUPPRESSOR] call BRM_FMK_fnc_attachToWeapon;
+#ifdef STRUCTURE_RIFLEMAN_CCO
+        [_unit, "primary", _commonRCO] call BRM_FMK_fnc_attachToWeapon;
+#endif
+    };
+    
+    case (_isReconAT): {
+        [_unit, _reconHEAD, _reconUNIFORM, _reconVEST, _bigBACKPACK] call BRM_FMK_fnc_useUniform;
+        [_unit, "binoc"] call BRM_FMK_fnc_addOptics;
+        [_unit,[[_wsmoke,2],[_rsmoke,2],[_gsmoke,2],[_rchemlight,2],[_bchemlight,2],[_wflare,2],[_mapTools,1]]] call BRM_FMK_fnc_addtoVest;
+        [_unit, _commonRIFLE, _countRIFLELOW] call BRM_FMK_fnc_addWeaponKit;
+        [_unit, _specAT] call BRM_FMK_fnc_addWeapon;
+        [_unit, [[_specAT select RAMMO, _countAT] ]] call BRM_FMK_fnc_addtoBackpack;
+        [_unit, _specAT select GUN, 1, ["HE"]] call BRM_FMK_fnc_addAmmoAuto;
+        [_unit, "primary", _commonSUPPRESSOR] call BRM_FMK_fnc_attachToWeapon;
+    };
+    
+     case (_isReconMarksman ): {
+        [_unit, _reconHEAD, _reconUNIFORM, _reconVEST, _commonBACKPACK] call BRM_FMK_fnc_useUniform;
+        [_unit, "binoc"] call BRM_FMK_fnc_addOptics;
+        [_unit,[[_wsmoke,2],[_rsmoke,2],[_gsmoke,2],[_mapTools,1]]] call BRM_FMK_fnc_addtoVest;
+        [_unit, _commonMARKSMAN, _countRIFLE] call BRM_FMK_fnc_addWeaponKit;
+        [_unit, _commonMARKSMAN select GUN, _countTracerRIFLE, ["TRACER"]] call BRM_FMK_fnc_addAmmoAuto;
+        [_unit, "primary", _commonRCO] call BRM_FMK_fnc_attachToWeapon;
     };
 
     case (_isReconMedic): {
-        [_unit, _medicHEAD, _reconUNIFORM, _reconVEST, _commonBACKPACK] call BRM_FMK_fnc_useUniform;
+        [_unit, _medicHEAD, _reconUNIFORM, _reconVEST, _bigBACKPACK] call BRM_FMK_fnc_useUniform;
         [_unit, "binoc"] call BRM_FMK_fnc_addOptics;
         [_unit,[[_wsmoke,2],[_rsmoke,2],[_gsmoke,2],[_mapTools,1]]] call BRM_FMK_fnc_addtoVest;
         [_unit, _suppliesMEDIC] call BRM_FMK_fnc_addtoBackpack;
         [_unit, _commonRIFLE, _countRIFLE] call BRM_FMK_fnc_addWeaponKit;
         [_unit, "primary", _commonSUPPRESSOR] call BRM_FMK_fnc_attachToWeapon;
+#ifdef STRUCTURE_RIFLEMAN_CCO
+        [_unit, "primary", _commonRCO] call BRM_FMK_fnc_attachToWeapon;
+#endif
         _defaultInsignia = "MedB";
     };
 
@@ -274,6 +366,9 @@ switch (true) do {
         [_unit,[[_C4,3],[_satchelCharge,1],[_deadManSwitch,1]]] call BRM_FMK_fnc_addtoBackpack;
         [_unit, _commonRIFLE, _countRIFLELOW] call BRM_FMK_fnc_addWeaponKit;
         [_unit, "primary", _commonSUPPRESSOR] call BRM_FMK_fnc_attachToWeapon;
+#ifdef STRUCTURE_RIFLEMAN_CCO
+        [_unit, "primary", _commonRCO] call BRM_FMK_fnc_attachToWeapon;
+#endif
     };
 
     case (_isPilot): {
@@ -302,26 +397,33 @@ switch (true) do {
     };
 
     case (_isSniper): {
-        [_unit, _sniperHEAD, _sniperUNIFORM, _commonVEST, "empty"] call BRM_FMK_fnc_useUniform;
+        [_unit, _sniperHEAD, _sniperUNIFORM, _commonVEST, if (_isLeader) then { "empty" } else { _commonBACKPACK }] call BRM_FMK_fnc_useUniform;
         [_unit,[[_wsmoke,2],[_mapTools,1],[_flashlight,1],[_rangeCard,1],[_kestrel,1]]] call BRM_FMK_fnc_addtoVest;
         [_unit, _commonSNIPER, _countSNIPER] call BRM_FMK_fnc_addWeaponKit;
         [_unit, _commonSNIPER select GUN, (_countSNIPER/2)+1, ["TRACER"]] call BRM_FMK_fnc_addAmmoAuto;
         [_unit, "primary", _commonMAGNIFIED] call BRM_FMK_fnc_attachToWeapon;
+        if (_isLeader) then { [_unit, "BP"] call BRM_FMK_fnc_addRadio };
     };
 
     case (_isSpotter): {
-        [_unit, _sniperHEAD, _sniperUNIFORM, _commonVEST, _commonBACKPACK] call BRM_FMK_fnc_useUniform;
+        [_unit, _sniperHEAD, _sniperUNIFORM, _commonVEST, if (_isLeader) then { "empty" } else { _commonBACKPACK }] call BRM_FMK_fnc_useUniform;
         [_unit,[[_wsmoke,2],[_rsmoke,2],[_gsmoke,2],[_ATragMX,1],[_rangeCard,1],[_flashlight,1],[_mapTools,1],[_kestrel,1]]] call BRM_FMK_fnc_addtoVest;
         [_unit,[[_commonSNIPER select RAMMO, (_countSNIPER*2)],[_spottingScope,1]]] call BRM_FMK_fnc_addtoBackpack;
         [_unit, _commonRIFLE, _countRIFLELOW] call BRM_FMK_fnc_addWeaponKit;
+#ifdef STRUCTURE_RIFLEMAN_CCO
+        [_unit, "primary", _commonRCO] call BRM_FMK_fnc_attachToWeapon;
+#endif
         [_unit, "laserdesignator"] call BRM_FMK_fnc_addOptics;
         if (_isLeader) then { [_unit, "BP"] call BRM_FMK_fnc_addRadio };
     };
 
     default {
-        [_unit, _commonHEAD, _commonUNIFORM, _commonVEST, "empty"] call BRM_FMK_fnc_useUniform;
+        [_unit, _commonHEAD, _commonUNIFORM, _commonVEST, _commonBACKPACK] call BRM_FMK_fnc_useUniform;
         [_unit,[[_wsmoke,2],[_grenade,3]]] call BRM_FMK_fnc_addtoVest;
         [_unit, _commonRIFLE, 5] call BRM_FMK_fnc_addWeaponKit;
+#ifdef STRUCTURE_RIFLEMAN_CCO
+        [_unit, "primary", _commonCCO] call BRM_FMK_fnc_attachToWeapon;
+#endif
     };
 };
 
@@ -333,4 +435,9 @@ switch (true) do {
 
 [_unit, "SR"] call BRM_FMK_fnc_addRadio;
 
-if ((mission_AGM_enabled)||(mission_ACE3_enabled)) then { [_unit, [[_earBuds, 1]]] call BRM_FMK_fnc_addtoUniform };
+if (mission_AGM_enabled || mission_ACE3_enabled) then {
+    [_unit, [[_earBuds, 1]]] call BRM_FMK_fnc_addtoUniform;
+    if (_unit == player) then {
+        [_unit] call (if (mission_AGM_enabled) then { AGM_Hearing_fnc_putInEarPlugs } else { ace_hearing_fnc_putInEarplugs });
+    };
+};

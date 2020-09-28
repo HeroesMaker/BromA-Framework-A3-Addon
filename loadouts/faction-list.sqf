@@ -11,7 +11,12 @@ switch (toUpper(_faction)) do {
     case "RACS": {
         #include "factions\racs.sqf"
     };
-
+    case "76TH": {
+        #include "factions\76TH.sqf"
+    };
+    case "PLA": {
+        #include "factions\PLA.sqf"
+    };
     case "SLA": {
         #include "factions\sla.sqf"
     };
@@ -136,12 +141,8 @@ switch (toUpper(_faction)) do {
         #include "factions\frwinter.sqf"
     };
 
-    case "FRWOOD": {
+    case "FRANCE": {
         #include "factions\frwood.sqf"
-    };
-
-    case "FRDESERT": {
-        #include "factions\frdesert.sqf"
     };
 
     case "MEC": {
@@ -170,6 +171,9 @@ switch (toUpper(_faction)) do {
     };
  	case "AFRICAN_ARMY": {
         #include "factions\africanarmy.sqf";
+    };
+ 	case "YUGO": {
+        #include "factions\yugo.sqf";
     };
 
     case "DEFAULT": {
